@@ -1,0 +1,16 @@
+#!/bin/bash -eu
+
+SCALE=10000
+TRANSACTIONS=100000
+
+echo ">> Old Schema - INSERT <<"
+dropdb --if-exists getsentry_pgbench
+createdb -E utf-8 getsentry_pgbench
+psql getsentry_pgbench < schema-current.sql > /dev/null
+pgbench getsentry_pgbench -n -t $TRANSACTIONS -s $SCALE -f test-current.sql
+
+echo ">> New Schema - INSERT <<"
+dropdb --if-exists getsentry_pgbench
+createdb -E utf-8 getsentry_pgbench
+psql getsentry_pgbench < schema-new.sql > /dev/null
+pgbench getsentry_pgbench -n -t $TRANSACTIONS -s $SCALE -f test-new.sql
